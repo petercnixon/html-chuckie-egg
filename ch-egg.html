@@ -25,12 +25,44 @@
 		<script type="text/JavaScript" language="JavaScript" src="loader.js"></script>
 
 <!-- 		<script type="text/JavaScript" language="JavaScript" src="ch-egg.js"></script> -->
+		<style type="text/css">
+			/* The playfield is drawn at 320x256. Scale the finished board; sprite
+			   positions and clip rectangles stay in the original pixel space. */
+			#outerdiv {
+				width: 320px;
+				height: 256px;
+				overflow: hidden;
+				transform-origin: top left;
+				transform: scale(var(--game-scale, 2));
+				image-rendering: -moz-crisp-edges;
+				image-rendering: pixelated;
+			}
+		</style>
+		<script type="text/JavaScript">
+			function fitGame()
+			{
+				var credit = document.getElementById("credit");
+				var outer = document.getElementById("outerdiv");
+				var creditBottom = credit.getBoundingClientRect().bottom;
+				var availW = window.innerWidth;
+				var availH = window.innerHeight - creditBottom;
+				var scale = Math.floor(Math.min(availW / 320, availH / 256));
+				if(scale < 1)
+					scale = 1;
+				document.documentElement.style.setProperty("--game-scale", scale);
+				var left = Math.floor((availW - (320 * scale)) / 2);
+				if(left < 0)
+					left = 0;
+				outer.style.marginLeft = left + "px";
+			}
+			window.addEventListener("resize", fitGame);
+		</script>
 	</head>
 	<!-- Setting an absolute position pulls the element out of the "flow" of the document and positions it regardless of the layout of surrounding elements. -->
 	<!-- An absolutely positioned element is always relative to either the next positioned parent or, if there isn't one, the body by default. -->
-	<body onload="load()" onunload="unload()" onkeydown="DownHandler(event)" onkeyup="UpHandler(event)">
+	<body onload="fitGame(); load();" onunload="unload()" onkeydown="DownHandler(event)" onkeyup="UpHandler(event)">
 		<div>
-		<p>Chuckie Egg (c) A&F Software 1983 - Ported to Javascript/HTML by Mark Lomas and distrubuted under the GNU General Public License.</p>
+		<p id="credit">Chuckie Egg (c) A&F Software 1983 - Ported to Javascript/HTML by Mark Lomas and distrubuted under the GNU General Public License.</p>
 		<div id="outerdiv" style="position:relative;left:0px;top:0px;">
 			<div id="gamediv" style="background-color:#000000;position:absolute;left:0px;top:0px;visibility:hidden;">
 				<div id="scorebar" style="background-color:#000000;position:absolute;left:0px;top:0px;">

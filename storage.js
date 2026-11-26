@@ -43,3 +43,41 @@ function createCookie(c_name,value,path,expiredays)
 	document.cookie=c_name+ "=" +value+((expiredays==null) ? "" : ";expires="+exdate.toGMTString()) + ((path==null)? "" : ";path="+path);
 }
 
+// A page opened as a file cannot keep cookies. Chrome does keep localStorage
+// for file:// pages, and window.name survives the Play navigation everywhere.
+function readStored(c_name)
+{
+	var value = readCookie(c_name);
+	if(value)
+		return value;
+
+	if(location.protocol != "file:")
+		return "";
+
+	try {
+		value = localStorage.getItem(c_name);
+		if(value)
+			return value;
+	} catch(e) {}
+
+	return readLevelHandoff(c_name);
+}
+
+function readLevelHandoff(c_name)
+{
+	var stash = "";
+	try { stash = globalThis.name || ""; } catch(e) { return ""; }
+	var prefix = "chuckie-levels:";
+	if(stash.indexOf(prefix) != 0)
+		return "";
+	var body = stash.substring(prefix.length);
+	var splitAt = body.indexOf("\n");
+	if(splitAt < 0)
+		return "";
+	if(c_name == "levels")
+		return body.substring(0, splitAt);
+	if(c_name == "chars")
+		return body.substring(splitAt + 1);
+	return "";
+}
+

@@ -79,16 +79,30 @@ function AudioSystem()
         
         if(this.audioSupport == this.audioTypeWHATWG)
         {
+            var files =
+            [
+                "sounds/leftright.wav",
+                "sounds/updown.wav",
+                "sounds/applause.wav",
+                "sounds/jump.wav",
+                "sounds/fall.wav",
+                "sounds/egg.wav",
+                "sounds/grain.wav",
+                "sounds/tune.wav"
+            ];
             this.cachedSamples = new Array;
             this.cachedSamples.length = 8;
-            this.cachedSamples[this.leftRightSample] = new Audio('sounds/leftright.wav');
-            this.cachedSamples[this.upDownSample] = new Audio('sounds/updown.wav');
-            this.cachedSamples[this.applauseSample] = new Audio('sounds/applause.wav');
-            this.cachedSamples[this.jumpSample] = new Audio('sounds/jump.wav');
-            this.cachedSamples[this.fallSample] = new Audio('sounds/fall.wav');
-            this.cachedSamples[this.eggSample] = new Audio('sounds/egg.wav');
-            this.cachedSamples[this.grainSample] = new Audio('sounds/grain.wav');
-            this.cachedSamples[this.tuneSample] = new Audio('sounds/tune.wav');
+            for(var i = 0; i < files.length; ++i)
+            {
+                var sample = new Audio(files[i]);
+                sample.preload = "auto";
+                // Walking, climbing and applause loop until the game stops them.
+                if(i < 3)
+                    sample.loop = true;
+                else
+                    this.BindSampleEnded(sample, i);
+                this.cachedSamples[i] = sample;
+            }
         }
         else
         {
@@ -123,10 +137,46 @@ function AudioSystem()
             this.playing[i] = false;
     }
 
+    // HTMLMediaElement has no stop(). Pause and rewind instead.
+    this.StopHtml5Sample = function(sample)
+    {
+        sample.pause();
+        try { sample.currentTime = 0; } catch(e) { }
+    }
+
+    this.BindSampleEnded = function(sample, index)
+    {
+        var self = this;
+        sample.addEventListener("ended", function()
+        {
+            self.playing[index] = false;
+        });
+    }
+
+    // Prefer the HTML5 Audio element. The plugin and draft-Opera paths below
+    // only exist for the browsers this port targeted in 2007.
+    this.HasHtml5Audio = function()
+    {
+        var probe;
+        if(typeof Audio === "undefined")
+            return false;
+
+        probe = document.createElement("audio");
+        if(!probe || typeof probe.canPlayType !== "function")
+            return false;
+
+        return probe.canPlayType("audio/wav") !== "" ||
+               probe.canPlayType("audio/wave") !== "" ||
+               probe.canPlayType("audio/x-wav") !== "";
+    }
+
     // Check browser support for audio playback
     this.EnumerateAudioSupport = function()
     {
         var agt = navigator.userAgent.toLowerCase();
+
+        if(this.HasHtml5Audio())
+            return this.audioTypeWHATWG;
 
         // Are we running on windows?
         if(agt.indexOf("windows") != -1)
@@ -225,30 +275,55 @@ function AudioSystem()
 
     this.play = function(sound)
     {
+        var sample;
+        var started;
+        var self;
+
         if(!this.enabled)
+            return;
+
+        if(this.audioSupport == this.audioTypeNone || !this.cachedSamples)
             return;
 
         if(this.playing[sound])
             return;
 
+        sample = this.cachedSamples[sound];
+        if(!sample)
+            return;
+
         switch(this.audioSupport)
         {
             case this.audioTypeNone:
-                break;
+                return;
             case this.audioTypeLiveAudio:
             case this.audioTypeQuickTime:
             case this.audioTypeOther:
             case this.audioTypeWMP:
-                try { this.cachedSamples[sound].Play(); } catch(e) { } // Mozilla is case sensitive here
+                try { sample.Play(); } catch(e) { } // Mozilla is case sensitive here
                 break;
             case this.audioTypeWMPPlugin:
-                 try { this.cachedSamples[sound].controls.play(); } catch(e) { }
+                 try { sample.controls.play(); } catch(e) { }
                 break;
             case this.audioTypeWHATWG:
+                // loop is a boolean, not the draft Opera loop() method.
                 if(sound < 3)
-                    this.cachedSamples[sound].loop();
-                else
-                    this.cachedSamples[sound].play();
+                    sample.loop = true;
+                this.StopHtml5Sample(sample);
+                try
+                {
+                    started = sample.play();
+                }
+                catch(e)
+                {
+                    return;
+                }
+                // A rejected play() (usually autoplay policy) must not stick the sample in the playing state.
+                if(started && typeof started.then === "function")
+                {
+                    self = this;
+                    started.then(function() {}, function() { self.playing[sound] = false; });
+                }
                 break;
         };
 
@@ -288,10 +363,19 @@ function AudioSystem()
     
     this.stop = function(sound)
     {
+        var sample;
+
         if(!this.enabled)
+            return;
+
+        if(this.audioSupport == this.audioTypeNone || !this.cachedSamples)
             return;
     
         if(!this.playing[sound])
+            return;
+
+        sample = this.cachedSamples[sound];
+        if(!sample)
             return;
 
         switch(this.audioSupport)
@@ -302,14 +386,14 @@ function AudioSystem()
             case this.audioTypeQuickTime:
             case this.audioTypeOther:
             case this.audioTypeWMP:
-                try { this.cachedSamples[sound].Stop(); } catch(e) { } // Mozilla is case sensitive here 
-                try { this.cachedSamples[sound].Rewind(); } catch(e) { } // Mozilla is case sensitive here 
+                try { sample.Stop(); } catch(e) { } // Mozilla is case sensitive here 
+                try { sample.Rewind(); } catch(e) { } // Mozilla is case sensitive here 
                 break;
             case this.audioTypeWMPPlugin:
-                try { this.cachedSamples[sound].controls.stop(); } catch(e) { }
+                try { sample.controls.stop(); } catch(e) { }
                 break;
             case this.audioTypeWHATWG:
-                this.cachedSamples[sound].stop();
+                this.StopHtml5Sample(sample);
                 break;
         };
 

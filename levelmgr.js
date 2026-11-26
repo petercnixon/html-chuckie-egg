@@ -78,7 +78,7 @@ function LevelManager()
 			return;
 
 		// Read from cookie.
-		var cookieLevels = readCookie("levels");
+		var cookieLevels = readStored("levels");
 		if(cookieLevels==null || cookieLevels=="")
 		{
 			// Populate cookie with the default level layout.
@@ -104,7 +104,7 @@ function LevelManager()
 			}
 		}
 
-		var cookieChars = readCookie("chars");
+		var cookieChars = readStored("chars");
 		if(cookieChars==null || cookieChars=="")
 			return;
 
