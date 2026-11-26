@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+	<head>
+		<title>Chuckie Egg</title>
+		<meta name="GENERATOR" content="Microsoft Visual Studio .NET 7.1">
+		<meta name="vs_targetSchema" content="http://schemas.microsoft.com/intellisense/ie5">
+		<Script type="text/JavaScript" language="JavaScript" src="config.js"></script>
+		<Script type="text/JavaScript" language="JavaScript" src="storage.js"></script>
+		<Script type="text/JavaScript" language="JavaScript" src="rle.js"></script>
+		<script type="text/JavaScript" language="JavaScript" src="levellayouts.js"></script>
+		<script type="text/JavaScript" language="JavaScript" src="levelmgr.js"></script>
+		<script type="text/JavaScript" language="JavaScript" src="pch.js"></script>
+		<script type="text/JavaScript" language="JavaScript" src="rect.js"></script>
+		<script type="text/JavaScript" language="JavaScript" src="keyboard.js"></script>
+		<script type="text/JavaScript" language="JavaScript" src="levelstate.js"></script>
+		<script type="text/JavaScript" language="JavaScript" src="lifts.js"></script>
+		<script type="text/JavaScript" language="JavaScript" src="motherduck.js"></script>
+		<script type="text/JavaScript" language="JavaScript" src="audio.js"></script>
+		<script type="text/JavaScript" language="JavaScript" src="hens.js"></script>
+		<script type="text/JavaScript" language="JavaScript" src="farmer.js"></script>
+		<script type="text/JavaScript" language="JavaScript" src="player.js"></script>
+		<script type="text/JavaScript" language="JavaScript" src="game.js"></script>
+		<Script type="text/Javascript" language="JavaScript" src="highscores.js"></script>
+		<script type="text/JavaScript" language="JavaScript" src="gui.js"></script>
+		<script type="text/JavaScript" language="JavaScript" src="loader.js"></script>
+
+<!-- 		<script type="text/JavaScript" language="JavaScript" src="ch-egg.js"></script> -->
+	</head>
+	<!-- Setting an absolute position pulls the element out of the "flow" of the document and positions it regardless of the layout of surrounding elements. -->
+	<!-- An absolutely positioned element is always relative to either the next positioned parent or, if there isn't one, the body by default. -->
+	<body onload="load()" onunload="unload()" onkeydown="DownHandler(event)" onkeyup="UpHandler(event)">
+		<div>
+		<p>Chuckie Egg (c) A&F Software 1983 - Ported to Javascript/HTML by Mark Lomas and distrubuted under the GNU General Public License.</p>
+		<div id="outerdiv" style="position:relative;left:0px;top:0px;">
+			<div id="gamediv" style="background-color:#000000;position:absolute;left:0px;top:0px;visibility:hidden;">
+				<div id="scorebar" style="background-color:#000000;position:absolute;left:0px;top:0px;">
+					<img id="headerbar" src="images/scorebar.gif" style="background-color:#000000;"/>
+					<img id="lifePlayer0" src="images/lives.gif" style="position:absolute;" />
+					<img id="lifePlayer1" src="images/lives.gif" style="position:absolute;" />
+					<img id="lifePlayer2" src="images/lives.gif" style="position:absolute;" />
+					<img id="lifePlayer3" src="images/lives.gif" style="position:absolute;" />
+					<img id="curplayer" src="images/numerals.gif" style="position:absolute" /> <img id="curlevel10" src="images/numerals.gif" style="position:absolute" />
+					<img id="curlevel1" src="images/numerals.gif" style="position:absolute" /> <img id="bonus1000" src="images/numerals.gif" style="position:absolute" />
+					<img id="bonus100" src="images/numerals.gif" style="position:absolute" /> <img id="bonus10" src="images/numerals.gif" style="position:absolute" />
+					<img id="bonus1" src="images/numerals.gif" style="position:absolute" /> <img id="time100" src="images/numerals.gif" style="position:absolute" />
+					<img id="time10" src="images/numerals.gif" style="position:absolute" /> <img id="time1" src="images/numerals.gif" style="position:absolute" />
+				</div>
+				<!-- Shift down start of absolute y coordinate to simplify positioning of images -->
+				<div style="position:absolute;left:0px;top:32px;">
+					<!-- Have another div here because firefox only does appendChild() and not insertAdjacentElement() and z-order doesnt appear to work properly. -->
+					<div id="maindiv" style="position:absolute;left:0px;top:0px;"></div>
+					<!-- Characters -->
+					<div id="characters" style="position:absolute;left:0px;top:0px;width:320px;height:224px;overflow:hidden;">
+						<img id="cage" src="images/cage.gif" style="position:absolute;left:0px;top:3px;">
+						<img id="farmerImage" src="images/farmer.gif" style="position:absolute;left:0px;top:0px;">
+						<img id="hen0" src="images/hen.gif" style="position:absolute;left:0px;top:0px;">
+						<img id="hen1" src="images/hen.gif" style="position:absolute;left:0px;top:0px;">
+						<img id="hen2" src="images/hen.gif" style="position:absolute;left:0px;top:0px;">
+						<img id="hen3" src="images/hen.gif" style="position:absolute;left:0px;top:0px;">
+						<img id="hen4" src="images/hen.gif" style="position:absolute;left:0px;top:0px;">
+						<img id="hen5" src="images/hen.gif" style="position:absolute;left:0px;top:0px;">
+						<img id="hen6" src="images/hen.gif" style="position:absolute;left:0px;top:0px;">
+						<img id="hen7" src="images/hen.gif" style="position:absolute;left:0px;top:0px;">
+						<img id="motherDuckImage" src="images/motherduck_caged.gif" style="position:absolute;left:8px;top:19px;">
+						<img id="lift0" src="images/lift.gif" style="position:absolute;left:0px;top:0px;">
+						<img id="lift1" src="images/lift.gif" style="position:absolute;left:0px;top:0px;">
+						<img id="lift2" src="images/lift.gif" style="position:absolute;left:0px;top:0px;">
+						<img id="lift3" src="images/lift.gif" style="position:absolute;left:0px;top:0px;">
+						<img id="lift4" src="images/lift.gif" style="position:absolute;left:0px;top:0px;">
+						<img id="lift5" src="images/lift.gif" style="position:absolute;left:0px;top:0px;">
+						<img id="lift6" src="images/lift.gif" style="position:absolute;left:0px;top:0px;">
+						<img id="lift7" src="images/lift.gif" style="position:absolute;left:0px;top:0px;">
+						<img id="lift8" src="images/lift.gif" style="position:absolute;left:0px;top:0px;">
+						<img id="lift9" src="images/lift.gif" style="position:absolute;left:0px;top:0px;">
+					</div>
+				</div>
+				<!-- Sound effects -->
+				<!-- Setting hidden="true" on the embed element mutes the sound so wrapper with invisible parent div element instead -->
+				<div id="audioDiv" style="visibility: hidden;">
+				</div>
+				<NOEMBED>
+				    <!-- This content will only be displayed if the browser doesn't support the EMBED HTML tag. -->
+				    <!-- <p><b>Embedded sounds are not supported by this browser.</b></p> -->
+				</NOEMBED>
+				
+			</div>
+		</div>
+		</div>
+	</body>
+</html>
