@@ -1,0 +1,211 @@
+#content
+{
+    padding-left: 16px;
+    padding-right: 16px;
+    font-family: "Trebuchet MS", Trebuchet, sans-serif;
+    font-size: 12px;
+}
+h1, h2 
+{
+/*    font-family: "Franklin Gothic Medium", Arial, Helvetica, "sans serif";*/
+    font-size: 32px;
+    /*font-weight: bold;*/
+    /*font-style: italic;*/
+    margin-left: 0px;
+    padding-left: 0px;
+    /*color : #9E0C39;*/
+    color : #4263A5;
+    margin-bottom:0px;
+    line-height: 1em;
+}
+h3 
+{
+    /*font-family: "Franklin Gothic Medium", Arial, Helvetica, "sans serif";*/
+    /*font-weight: bold;*/
+    /*font-style: italic;*/
+    font-size: 18px;
+    margin-left: 0px;
+    padding-left: 0px;
+    /*color : #9E0C39;*/
+    color : #4263A5;
+}
+h4
+{
+    /*font-family: "Franklin Gothic Medium", Arial, Helvetica, "sans serif";*/
+    font-size: 18px;
+    margin-top: 0px;
+    margin-bottom:0px;
+/*    margin-bottom: 12px;*/
+    padding-left: 0px;
+}
+a:link
+{
+    /*color : #9E0C39;*/
+    color : #4263A5;
+}
+a:visited
+{
+	color: purple;
+}
+#header
+{
+    float:left;
+}
+#search
+{
+    float:right;
+}
+#menubar
+{
+    clear:both;
+    background-color: rgb(200, 200, 200);
+    color: White;
+    margin-top: 2px;
+    padding-top: 0px;
+}
+#menubar ul
+{
+    padding-left: 8px;
+    margin-left: 0px;
+}
+#menubar li
+{
+    display:inline;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    color: White;
+    font-weight: bold;
+    font-size: 16px;
+    text-decoration: none;
+}
+#menubar a
+{
+    color : White;
+    text-decoration: none;
+}
+#menubar a:hover
+{
+/*    color : #9E0C39;*/
+	color:#4263A5;
+}
+#launchlist li, ul
+{
+    text-decoration: none;
+    font-weight: bold;
+    list-style-type: none;
+    /*padding-left: 0px;
+    margin-left: 0px;*/
+}
+.side1
+{
+    float: left;
+    width: 380px;
+    padding-right: 16px;
+}
+
+.side2
+{
+    float: left;
+    width: 380px; /*272px;*/
+    padding-right: 16px;
+}
+
+.side3
+{
+/*    float: left;
+    width: 272px;
+    padding-right: 16px;*/
+}
+
+.threecol1
+{
+    float: left;
+    width: 250px;
+    padding-right: 16px;
+}
+.threecol2
+{
+    float: left;
+    width: 250px;
+    padding-right: 16px;
+}
+.threecol3
+{
+    float: left;
+    width: 250px;
+    padding-right: 16px;
+}
+
+#footer
+{
+    clear: both;
+    background-color: rgb(225, 225, 225); /* 225 */
+    padding-top: 8px;
+    padding-bottom: 24px;
+    font-weight: bold;
+    font-size: 12px;  
+         
+}
+#copyright
+{
+    float:left;
+    clear: none;
+    margin-left: 16px;
+    margin-right: 16px;	
+}
+#footermenu
+{
+    float:right;
+    clear: none;
+    margin-left: 16px;
+    margin-right: 16px;
+}
+#footermenu li
+{
+    display:inline;
+}
+
+table 
+{ 
+	width:50%; 
+	border-top:1px solid #e5eff8; 
+	border-right:1px solid #e5eff8; 
+	margin:1em auto; 
+	border-collapse:collapse; 
+} 
+td
+{ 
+	color:#678197; 
+	border-bottom:1px solid #e5eff8; 
+	border-left:1px solid #e5eff8; 
+	padding:.3em 1em; 
+	text-align:center; 
+}
+th
+{ 
+	color:#678197; 
+	border-bottom:1px solid #e5eff8; 
+	border-left:1px solid #e5eff8; 
+	padding:.3em 1em; 
+	text-align:center; 
+}
+tr.odd td 
+{ 
+	background:#f7fbff 
+} 
+
+/*
+     FILE ARCHIVED ON 16:02:01 Sep 02, 2021 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 19:25:28 Nov 20, 2026.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+*/
+/*
+playback timings (ms):
+  capture_cache.get: 0.44
+  load_resource: 78.137
+  PetaboxLoader3.resolve: 40.611
+  PetaboxLoader3.datanode: 36.348
+*/

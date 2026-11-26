@@ -1,0 +1,269 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+	<head>
+		<title>DHTML Chuckie Egg Level Editor</title>
+		<meta name="GENERATOR" content="Microsoft Visual Studio .NET 7.1">
+		<meta name="vs_targetSchema" content="http://schemas.microsoft.com/intellisense/ie5">
+		<link href="style.css" rel="stylesheet" type="text/css">
+		<script type="text/JavaScript" language="JavaScript" src="defaultlayouts.js"></script>
+		<script type="text/JavaScript" language="JavaScript" src="rle.js"></script>
+		<script type="text/JavaScript" language="JavaScript" src="leveledit.js"></script>
+
+<style type="text/css">
+<!--
+
+.cell
+{
+	position:absolute;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	overflow: hidden;
+	/*background-color: #000000;*/
+	background-image: none;
+	background-repeat: no-repeat;
+}
+
+.on
+{
+	border-width: 1px;
+	border-style: solid;
+	border-color: #ff00ff;
+}
+
+.off
+{
+	border-width: 0px;
+}
+
+.imglabel
+{
+	background-repeat: no-repeat;
+	padding-left: 20px;
+	background-position:center left;
+}
+
+.levnum
+{
+	margin: 4px 4px 4px 4px;
+	padding: 4px 4px 4px 4px;
+}
+
+.overlay
+{
+	float:none;
+	width:320px;
+	height:256px;
+	margin:0px 0px 0px 0px;
+	padding: 0px 0px 0px 0px;
+	background-image:url(./images/background.png);
+/*	opacity:0.2;*/
+/*	filter:alpha(opacity=20);*/
+	background-repeat: no-repeat;
+	transform-origin: top left;
+	transform: scale(var(--game-scale, 2));
+	image-rendering: -moz-crisp-edges;
+	image-rendering: pixelated;
+}
+
+#editor-row
+{
+	display: flex;
+	align-items: flex-start;
+	gap: 16px;
+}
+
+#board-slot
+{
+	flex: 0 0 auto;
+	width: calc(320px * var(--game-scale, 2));
+	height: calc(256px * var(--game-scale, 2));
+}
+
+#palette
+{
+	display: flex;
+	gap: 24px;
+	flex: 0 0 auto;
+}
+
+
+.blank { background-image: none; }
+.egg { background-image: url(./images/egg.gif); }
+.grain { background-image: url(./images/grain.gif); }
+.wall { background-image: url(./images/wall.gif); }
+.ladder { background-image: url(./images/ladder.gif); }
+.lift { background-image: url(./images/lift.gif); }
+.farmer { background-image: url(./images/farmer-icon.gif); }
+.hen1 { background-image: url(./images/hen1.gif); }
+.hen2 { background-image: url(./images/hen2.gif); }
+.hen3 { background-image: url(./images/hen3.gif); }
+.hen4 { background-image: url(./images/hen4.gif); }
+.hen5 { background-image: url(./images/hen5.gif); }
+.hen6 { background-image: url(./images/hen6.gif); }
+.hen7 { background-image: url(./images/hen7.gif); }
+.hen8 { background-image: url(./images/hen8.gif); }
+
+-->
+</style>
+<script type="text/JavaScript">
+	function fitEditor()
+	{
+		var row = document.getElementById("editor-row");
+		var palette = document.getElementById("palette");
+		var paletteW = palette.getBoundingClientRect().width;
+		var availW = row.parentNode.clientWidth - paletteW - 16;
+		var availH = window.innerHeight - 8;
+		var scale = Math.floor(Math.min(availW / 320, availH / 256));
+		if(scale < 1)
+			scale = 1;
+		document.documentElement.style.setProperty("--game-scale", scale);
+	}
+	window.addEventListener("resize", fitEditor);
+</script>
+</head>
+	<body onload="fitEditor(); go();" onunload="save();">
+ 
+		<div id="content">
+			<h1>DHTML Chuckie Egg Level Editor</h1>
+<noscript>
+<h3>No Javascript support detected</h4>
+<br/>
+<p><b>Are you using a browser that doesn't support JavaScript?</b><br/>
+If your browser does not support JavaScript, you can upgrade to a newer browser, such as <a href="www.google.com/chrome">Google Chrome</a>, <a href="www.mozilla.com/firefox/">FireFox</a>, <a href="www.microsoft.com/windows/downloads/ie/getitnow.mspx">Internet Explorer 7</a>, or <a href="http://www.netscape.co.uk/netscape/7/">Netscape 7</a>.</p>
+<p><b>Have you disabled JavaScript?</b></br>
+If you have disabled JavaScript, you must re-enable JavaScript to use this page. To enable JavaScript:</p>
+<b>Internet Explorer (6.0)</b>
+
+<ol>
+<li>Select 'Tools' from the top menu</li>
+<li>Choose 'Internet Options'</li>
+<li>Click on the 'Security' tab</li>
+<li>Click on 'Custom Level'</li>
+<li>Scroll down until you see section labled 'Scripting'</li>
+<li>Under 'Active Scripting', select 'Enable' and click OK</li>
+</ol>
+
+<b>Netscape Navigator (4.8)</b>
+<ol>
+<li>Select 'Edit' from the top menu</li>
+<li>Choose 'Preferences'</li>
+<li>Choose 'Advanced'</li>
+<li>Choose 'Scripts &amp; Plugins'</li>
+<li>Select the 'Enable JavaScript' checkbox and click OK</li>
+</ol>
+<b>Mozilla Firefox (1.0)</b>
+<ol>
+<li>Select 'Tools' from the top menu</li>
+<li>Choose 'Options'</li>
+<li>Choose 'Web Features' from the left navigation</li>
+<li>Select the checkbox next to 'Enable JavaScript' and click OK</li>
+</ol>
+<b>Mozilla Firefox (1.5)</b>
+<ol>
+<li>Select 'Tools' from the top menu</li>
+<li>Choose 'Options'</li>
+<li>Choose 'Content' from the top navigation</li>
+<li>Select the checkbox next to 'Enable JavaScript' and click OK</li>
+</ol>
+<b>Apple Safari (1.0)</b>
+<ol>
+<li>Select 'Safari' from the top menu</li>
+<li>Choose 'Preferences'</li>
+<li>Choose 'Security'</li>
+<li>Select the checkbox next to 'Enable JavaScript'</li>
+</ol>				
+</noscript>
+			
+
+			<div>
+				<h3>Instructions</h3>
+				<p>The DHTML Chuckie Egg level editor allows you to quickly design and play new Chuckie Egg levels.  Use the palette on the right-hand side of the level editing window to select an item. The left mouse button places the item down on the editing window and the right mouse button erases it again. Holding down the CTRL key locks the mouse to either a horizontal or vertical direction depending on the direction the it is first moved in. This is especially useful for laying out walls and ladders. Use the arrow buttons to navigate through all eight levels. You can press the 'Play' button at any time to validate and play the game using your designs.</p>
+	
+				<p>Your level designs are stored in cookies with an unlimited life span. This means that they will still be available the next time you visit the website to play. Deleting your browser history/cookies will reset your level layouts to be defaults again. The 'Generate Code' button will write javascript level layout descriptions to the text area. This code can be used to replace the default level layouts distributed with the DHTML Chuckie Egg source code.</p>
+
+				<h3>Limitations</h3>
+				<p>DHTML Chuckie Egg supports upto eight hens, but levels 1-8 will only use hens numbered 1-4 (if they are placed). Hens numberd 5-8 appear from level twenty four onwards (because levels 9-16 only feature motherduck). Also, since the aim of the game is to collect a dozen eggs, you must place twelve eggs down. You may place upto five lifts and as many pieces of grain as you like. The level editor doesn't impose any restrictions on your layout. This means it is possible to create a bad design that is either impossible to complete in game or leads to unpredictable results.</p>
+
+				<p>I used this level editor to layout the alternative level sets described in the <a href="http://www.bagshot-row.org/chuckie-egg/hacksandupgrades.html">Hacks and Upgrades</a> section of The Chuckie Egg Professional's Resource Kit.</p>
+			</div>
+			
+			<div id="editor-row">
+			<div id="board-slot">
+			<div class="overlay">
+				<div style="position:relative;top:0;height:32;width:320;margin:0px 0px 0px 0px;padding: 0px 0px 0px 0px;"></div>
+				<div id="maindiv" style="position:relative;top:0;z-index:2" oncontextmenu="return false;">
+				</div>
+			</div>
+			</div>
+
+			<div id="palette">
+			<div>
+				<!-- <input type="radio" name="group1" id="blank" value="Blank"/>
+				<label for="blank" class="imglabel blank" >Blank</label><br/> -->
+				<input type="radio" name="group1" id="wall" value="Wall" onclick="levelEditor.SetLayoutMode()" checked="">
+				<label for="wall" class="imglabel wall">Wall</label><br>
+				<input type="radio" name="group1" id="grain" value="Grain" onclick="levelEditor.SetLayoutMode()">
+				<label for="grain" class="imglabel grain">Grain</label><br>
+				<input type="radio" name="group1" id="egg" value="Egg" onclick="levelEditor.SetLayoutMode()">
+				<label for="egg" class="imglabel egg">Egg</label><br>
+				<input type="radio" name="group1" id="ladder" value="Ladder" onclick="levelEditor.SetLayoutMode()">
+				<label for="ladder" class="imglabel ladder">Ladder</label><br>
+				<br>
+			</div>
+			<div>
+				<input type="radio" name="group1" id="lift" value="Lift" onclick="levelEditor.SetCharacterMode()">
+				<label for="lift" class="imglabel lift">Lift</label><br>
+				<input type="radio" name="group1" id="farmer" value="Farmer" onclick="levelEditor.SetCharacterMode()">
+				<label for="farmer" class="imglabel farmer">Farmer</label><br>
+				<input type="radio" name="group1" id="hen1" value="Hen1" onclick="levelEditor.SetCharacterMode()">
+				<label for="hen1" class="imglabel hen1">Hen 1</label><br>
+				<input type="radio" name="group1" id="hen2" value="Hen2" onclick="levelEditor.SetCharacterMode()">
+				<label for="hen2" class="imglabel hen2">Hen 2</label><br>
+				<input type="radio" name="group1" id="hen3" value="Hen3" onclick="levelEditor.SetCharacterMode()">
+				<label for="hen3" class="imglabel hen3">Hen 3</label><br>
+				<input type="radio" name="group1" id="hen4" value="Hen4" onclick="levelEditor.SetCharacterMode()">
+				<label for="hen4" class="imglabel hen4">Hen 4</label><br>
+				<input type="radio" name="group1" id="hen5" value="Hen5" onclick="levelEditor.SetCharacterMode()">
+				<label for="hen5" class="imglabel hen5">Hen 5</label><br>
+				<input type="radio" name="group1" id="hen6" value="Hen6" onclick="levelEditor.SetCharacterMode()">
+				<label for="hen6" class="imglabel hen6">Hen 6</label><br>
+				<input type="radio" name="group1" id="hen7" value="Hen7" onclick="levelEditor.SetCharacterMode()">
+				<label for="hen7" class="imglabel hen7">Hen 7</label><br>
+				<input type="radio" name="group1" id="hen8" value="Hen8" onclick="levelEditor.SetCharacterMode()">
+				<label for="hen8" class="imglabel hen8">Hen 8</label><br>
+			</div>
+			</div>
+			</div>
+
+			<div id="load" style="float:left;">
+				<div style="text-align: right;">
+					
+				</div>
+			</div>
+
+			<div style="clear:both;">
+				<!-- Next/Prev level controls.-->
+				<div>
+					<span>Current level: <input type="button" name="PrevLevel" value="&lt;&lt;" onclick="levelEditor.PrevLevel();"><span id="currlevel" class="levnum">4</span><input type="button" name="NextLevel" value="&gt;&gt;" onclick="levelEditor.NextLevel();"></span>
+					<input type="button" name="ClearLevel" value="Clear" onclick="levelEditor.ClearCurrentLayout();">
+					<input type="button" name="ResetLevel" value="Reset" onclick="levelEditor.ResetCurrentLayout();">
+					<input type="button" name="Play" value="Play" onclick="levelEditor.Play('ch-egg-userdefined.html');">
+					<input type="button" name="generate" value="Generate Code" onclick="levelEditor.generateCode();">
+				</div>
+				<br>
+				<div>
+					Javascript code:<br>
+					<textarea id="leveldesc" rows="14" cols="58"></textarea>
+				</div>
+				<br>
+			</div>
+
+			<div style="clear:both;"><br></div>
+			<div id="footer">
+				<span style="padding-left:8px;float:left;text-align:left">Copyright (c) Mark Lomas 2009</span>
+			</div>
+		</div>
+	
+
+
+</body></html>

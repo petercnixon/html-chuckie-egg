@@ -71,3 +71,53 @@ function asciiDecode(str)
 	return result;
 }
 
+// RLE compression reference implementation
+function rleEncode(data)
+{
+	var result = new Array;
+	if(data.length == 0)
+		return result;
+
+	var count = 1;
+	var r = 0;
+	for(var i = 0; i < (data.length - 1); i++)
+	{
+		// If contiguous sequence ends, or we encounter a ladder/egg
+		// or the sequence reaches 30 elements in length, terminate sequence.
+		if(data[i] != data[i+1] || data[i] >= 3 || count == 30)
+		{
+			result[r] = data[i];
+			result[r+1] = count;
+			count = 0;
+			r +=2;
+		}
+		count++;
+	}
+	result[r] = data[i];
+	result[r+1] = count;
+
+	return result;
+}
+
+function asciiEncode(data)
+{
+	var str = "";
+	for(var i = 0; i < data.length; i+=2)
+	{
+		var rleValue = data[i];
+		var rleSequenceLength = data[i+1];
+
+		if(rleValue < 3) // Sequences are captured for blanks, walls or grains
+			var asciiCode = 36 + (rleValue * 30) + (rleSequenceLength - 1);
+		else // remaining cell types (3 and 4) are treated as one-offs
+			var asciiCode = 33 + (rleValue - 3);
+
+		// Special case for eliminated semi-colons
+		if(asciiCode == 59)
+			asciiCode = 35;
+
+		str += String.fromCharCode(asciiCode);
+	}
+	return str;
+}
+

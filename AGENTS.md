@@ -6,7 +6,7 @@ Script order in `ch-egg.html` is the load order. Later files call earlier global
 
 ## Style
 
-Files are 2007-era constructors: methods assigned on `this`, shared state in globals from `pch.js`, tabs, and a GPL header. Match that. Leave `leveleditor/` alone unless the task is about the editor. It is a separate archived page (`level-editor.html`), not part of the game loop.
+Files are 2007-era constructors: methods assigned on `this`, shared state in globals from `pch.js`, tabs, and a GPL header. Match that. `level-editor.html` is the archived editor page, not part of the game loop. `images/farmer.gif` is the game sprite strip; the editor palette uses `images/farmer-icon.gif`.
 
 `config.js` has the only runtime switches: `g_loadLevels` (custom layouts from storage) and `g_audioEnabled`.
 

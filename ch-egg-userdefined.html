@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+	<head>
+		<title>Chuckie Egg - User Defined Levels</title>
+		<meta name="GENERATOR" content="Microsoft Visual Studio .NET 7.1">
+		<meta name="vs_targetSchema" content="http://schemas.microsoft.com/intellisense/ie5">
+		<!-- Same game as ch-egg.html. Scripts, images and sounds live in this folder. -->
+		<Script type="text/JavaScript" language="JavaScript" src="config.js"></script>
+		<script type="text/JavaScript">
+			// The level editor's Play button lands here. Always take the layouts
+			// it stored in the "levels" and "chars" cookies.
+			g_loadLevels = true;
+		</script>
+		<Script type="text/JavaScript" language="JavaScript" src="storage.js"></script>
+		<Script type="text/JavaScript" language="JavaScript" src="rle.js"></script>
+		<script type="text/JavaScript" language="JavaScript" src="levellayouts.js"></script>
+		<script type="text/JavaScript" language="JavaScript" src="levelmgr.js"></script>
+		<script type="text/JavaScript" language="JavaScript" src="pch.js"></script>
+		<script type="text/JavaScript" language="JavaScript" src="rect.js"></script>
+		<script type="text/JavaScript" language="JavaScript" src="keyboard.js"></script>
+		<script type="text/JavaScript" language="JavaScript" src="levelstate.js"></script>
+		<script type="text/JavaScript" language="JavaScript" src="lifts.js"></script>
+		<script type="text/JavaScript" language="JavaScript" src="motherduck.js"></script>
+		<script type="text/JavaScript" language="JavaScript" src="audio.js"></script>
+		<script type="text/JavaScript" language="JavaScript" src="hens.js"></script>
+		<script type="text/JavaScript" language="JavaScript" src="farmer.js"></script>
+		<script type="text/JavaScript" language="JavaScript" src="player.js"></script>
+		<script type="text/JavaScript" language="JavaScript" src="game.js"></script>
+		<Script type="text/Javascript" language="JavaScript" src="highscores.js"></script>
+		<script type="text/JavaScript" language="JavaScript" src="gui.js"></script>
+		<script type="text/JavaScript" language="JavaScript" src="loader.js"></script>
+		<style type="text/css">
+			/* The playfield is drawn at 320x256. Scale the finished board; sprite
+			   positions and clip rectangles stay in the original pixel space. */
+			#outerdiv {
+				width: 320px;
+				height: 256px;
+				overflow: hidden;
+				transform-origin: top left;
+				transform: scale(var(--game-scale, 2));
+				image-rendering: -moz-crisp-edges;
+				image-rendering: pixelated;
+			}
+		</style>
+		<script type="text/JavaScript">
+			function fitGame()
+			{
+				var credit = document.getElementById("credit");
+				var outer = document.getElementById("outerdiv");
+				var creditBottom = credit.getBoundingClientRect().bottom;
+				var availW = window.innerWidth;
+				var availH = window.innerHeight - creditBottom;
+				var scale = Math.floor(Math.min(availW / 320, availH / 256));
+				if(scale < 1)
+					scale = 1;
+				document.documentElement.style.setProperty("--game-scale", scale);
+				var left = Math.floor((availW - (320 * scale)) / 2);
+				if(left < 0)
+					left = 0;
+				outer.style.marginLeft = left + "px";
+			}
+			window.addEventListener("resize", fitGame);
+		</script>
+	</head>
+	<body onload="fitGame(); load();" onunload="unload()" onkeydown="DownHandler(event)" onkeyup="UpHandler(event)">
+		<div>
+		<p id="credit">Chuckie Egg (c) A&amp;F Software 1983 - Ported to Javascript/HTML by Mark Lomas and distrubuted under the GNU General Public License. Playing levels from the level editor.</p>
+		<div id="outerdiv" style="position:relative;left:0px;top:0px;">
+			<div id="gamediv" style="background-color:#000000;position:absolute;left:0px;top:0px;visibility:hidden;">
+				<div id="scorebar" style="background-color:#000000;position:absolute;left:0px;top:0px;">
+					<img id="headerbar" src="images/scorebar.gif" style="background-color:#000000;"/>
+					<img id="lifePlayer0" src="images/lives.gif" style="position:absolute;" />
+					<img id="lifePlayer1" src="images/lives.gif" style="position:absolute;" />
+					<img id="lifePlayer2" src="images/lives.gif" style="position:absolute;" />
+					<img id="lifePlayer3" src="images/lives.gif" style="position:absolute;" />
+					<img id="curplayer" src="images/numerals.gif" style="position:absolute" /> <img id="curlevel10" src="images/numerals.gif" style="position:absolute" />
+					<img id="curlevel1" src="images/numerals.gif" style="position:absolute" /> <img id="bonus1000" src="images/numerals.gif" style="position:absolute" />
+					<img id="bonus100" src="images/numerals.gif" style="position:absolute" /> <img id="bonus10" src="images/numerals.gif" style="position:absolute" />
+					<img id="bonus1" src="images/numerals.gif" style="position:absolute" /> <img id="time100" src="images/numerals.gif" style="position:absolute" />
+					<img id="time10" src="images/numerals.gif" style="position:absolute" /> <img id="time1" src="images/numerals.gif" style="position:absolute" />
+				</div>
+				<div style="position:absolute;left:0px;top:32px;">
+					<div id="maindiv" style="position:absolute;left:0px;top:0px;"></div>
+					<div id="characters" style="position:absolute;left:0px;top:0px;width:320px;height:224px;overflow:hidden;">
+						<img id="cage" src="images/cage.gif" style="position:absolute;left:0px;top:3px;">
+						<img id="farmerImage" src="images/farmer.gif" style="position:absolute;left:0px;top:0px;">
+						<img id="hen0" src="images/hen.gif" style="position:absolute;left:0px;top:0px;">
+						<img id="hen1" src="images/hen.gif" style="position:absolute;left:0px;top:0px;">
+						<img id="hen2" src="images/hen.gif" style="position:absolute;left:0px;top:0px;">
+						<img id="hen3" src="images/hen.gif" style="position:absolute;left:0px;top:0px;">
+						<img id="hen4" src="images/hen.gif" style="position:absolute;left:0px;top:0px;">
+						<img id="hen5" src="images/hen.gif" style="position:absolute;left:0px;top:0px;">
+						<img id="hen6" src="images/hen.gif" style="position:absolute;left:0px;top:0px;">
+						<img id="hen7" src="images/hen.gif" style="position:absolute;left:0px;top:0px;">
+						<img id="motherDuckImage" src="images/motherduck_caged.gif" style="position:absolute;left:8px;top:19px;">
+						<img id="lift0" src="images/lift.gif" style="position:absolute;left:0px;top:0px;">
+						<img id="lift1" src="images/lift.gif" style="position:absolute;left:0px;top:0px;">
+						<img id="lift2" src="images/lift.gif" style="position:absolute;left:0px;top:0px;">
+						<img id="lift3" src="images/lift.gif" style="position:absolute;left:0px;top:0px;">
+						<img id="lift4" src="images/lift.gif" style="position:absolute;left:0px;top:0px;">
+						<img id="lift5" src="images/lift.gif" style="position:absolute;left:0px;top:0px;">
+						<img id="lift6" src="images/lift.gif" style="position:absolute;left:0px;top:0px;">
+						<img id="lift7" src="images/lift.gif" style="position:absolute;left:0px;top:0px;">
+						<img id="lift8" src="images/lift.gif" style="position:absolute;left:0px;top:0px;">
+						<img id="lift9" src="images/lift.gif" style="position:absolute;left:0px;top:0px;">
+					</div>
+				</div>
+				<div id="audioDiv" style="visibility: hidden;">
+				</div>
+			</div>
+		</div>
+		</div>
+	</body>
+</html>
