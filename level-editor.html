@@ -177,12 +177,12 @@ If you have disabled JavaScript, you must re-enable JavaScript to use this page.
 
 			<div>
 				<h3>Instructions</h3>
-				<p>The DHTML Chuckie Egg level editor allows you to quickly design and play new Chuckie Egg levels.  Use the palette on the right-hand side of the level editing window to select an item. The left mouse button places the item down on the editing window and the right mouse button erases it again. Holding down the CTRL key locks the mouse to either a horizontal or vertical direction depending on the direction the it is first moved in. This is especially useful for laying out walls and ladders. Use the arrow buttons to navigate through all eight levels. You can press the 'Play' button at any time to validate and play the game using your designs.</p>
+				<p>The DHTML Chuckie Egg level editor allows you to quickly design and play new Chuckie Egg levels.  Use the palette on the right-hand side of the level editing window to select an item. The left mouse button places the item down on the editing window and the right mouse button erases it again. Holding down the CTRL key locks the mouse to either a horizontal or vertical direction depending on the direction the it is first moved in. This is especially useful for laying out walls and ladders. Use the arrow buttons to navigate through all eight levels. Play validates all eight levels and starts the game at level 1. Play level validates the level on screen and starts the game there. The menu beside it chooses the enemy set for that visit: hens 1-4, mother duck only, hens 1-4 with mother duck, hens 1-8 with mother duck, or the same set with faster hens.</p>
 	
-				<p>Your level designs are stored in cookies with an unlimited life span. This means that they will still be available the next time you visit the website to play. Deleting your browser history/cookies will reset your level layouts to be defaults again. The 'Generate Code' button will write javascript level layout descriptions to the text area. This code can be used to replace the default level layouts distributed with the DHTML Chuckie Egg source code.</p>
+				<p>Your level designs are stored in cookies with an unlimited life span. This means that they will still be available the next time you visit the website to play. Deleting your browser history/cookies will reset your level layouts to be defaults again. Save file downloads all eight levels as levellayouts.js. Load file reads a layout script in that form, including the alternative level sets. The 'Generate Code' button writes the same script into the text area. Either one can replace the default level layouts distributed with the DHTML Chuckie Egg source code.</p>
 
 				<h3>Limitations</h3>
-				<p>DHTML Chuckie Egg supports upto eight hens, but levels 1-8 will only use hens numbered 1-4 (if they are placed). Hens numberd 5-8 appear from level twenty four onwards (because levels 9-16 only feature motherduck). Also, since the aim of the game is to collect a dozen eggs, you must place twelve eggs down. You may place upto five lifts and as many pieces of grain as you like. The level editor doesn't impose any restrictions on your layout. This means it is possible to create a bad design that is either impossible to complete in game or leads to unpredictable results.</p>
+				<p>DHTML Chuckie Egg supports upto eight hens. Levels 1-8 use hens 1-4. Levels 9-16 use mother duck and no hens. Levels 17-24 use mother duck and hens 1-4. From level 25, mother duck is out with hens 1-8. From level 33 those hens also move faster. The eight layouts then repeat. Also, since the aim of the game is to collect a dozen eggs, you must place twelve eggs down. You may place upto five lifts and as many pieces of grain as you like. The level editor doesn't impose any restrictions on your layout. This means it is possible to create a bad design that is either impossible to complete in game or leads to unpredictable results.</p>
 
 				<p>I used this level editor to layout the alternative level sets described in the <a href="http://www.bagshot-row.org/chuckie-egg/hacksandupgrades.html">Hacks and Upgrades</a> section of The Chuckie Egg Professional's Resource Kit.</p>
 			</div>
@@ -248,7 +248,19 @@ If you have disabled JavaScript, you must re-enable JavaScript to use this page.
 					<input type="button" name="ClearLevel" value="Clear" onclick="levelEditor.ClearCurrentLayout();">
 					<input type="button" name="ResetLevel" value="Reset" onclick="levelEditor.ResetCurrentLayout();">
 					<input type="button" name="Play" value="Play" onclick="levelEditor.Play('ch-egg-userdefined.html');">
+					<input type="button" name="PlayLevel" value="Play level" onclick="levelEditor.PlayCurrent('ch-egg-userdefined.html');">
+					<label for="playmode">as</label>
+					<select id="playmode" name="playmode">
+						<option value="0">Hens 1-4</option>
+						<option value="8">Mother duck</option>
+						<option value="16">Hens 1-4 + mother duck</option>
+						<option value="24">Hens 1-8 + mother duck</option>
+						<option value="32">Hens 1-8 + mother duck, fast</option>
+					</select>
 					<input type="button" name="generate" value="Generate Code" onclick="levelEditor.generateCode();">
+					<input type="button" name="savefile" value="Save file" onclick="levelEditor.SaveFile();">
+					<input type="button" name="loadfile" value="Load file" onclick="document.getElementById('levelfile').click();">
+					<input type="file" id="levelfile" accept=".js,text/javascript" style="position:absolute;left:-9999px;" onchange="levelEditor.LoadFile(this);">
 				</div>
 				<br>
 				<div>

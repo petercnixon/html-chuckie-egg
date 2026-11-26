@@ -845,9 +845,19 @@ function LevelEditor()
 		this.SetCurrentLayout(this.currentLayout, false);
 	};
 
-	this.generateCode = function()
+	// Javascript source for the eight levels, in the same form as levellayouts.js.
+	this.BuildLevelScript = function()
 	{
 		var str = "";
+		str += "// Level description\n";
+		str += "// size must be 20x28\n";
+		str += "//\n";
+		str += "// 0=blank\n";
+		str += "// 1=wall\n";
+		str += "// 2=grain\n";
+		str += "// 3=egg\n";
+		str += "// 4=ladder\n";
+		str += "\n";
 		for(var level = 0; level < 8; ++level)
 		{
 			str += "var level" + (level+1) + "=[\n";
@@ -903,7 +913,153 @@ function LevelEditor()
 			}
 			str += "];\n";
 		}
-		this.SetTextNode("leveldesc", str);
+		return str;
+	}
+
+	this.generateCode = function()
+	{
+		// A textarea keeps its own value. Replacing its text node only
+		// updates the box the first time.
+		document.getElementById("leveldesc").value = this.BuildLevelScript();
+	}
+
+	this.SaveFile = function()
+	{
+		var str = this.BuildLevelScript();
+		document.getElementById("leveldesc").value = str;
+
+		var blob = new Blob([str], { type: "text/javascript" });
+		var url = URL.createObjectURL(blob);
+		var link = document.createElement("a");
+		link.href = url;
+		link.download = "levellayouts.js";
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+		setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+	}
+
+	// Read a layout script without running it. Comments are ignored. Each
+	// level needs a grid, eight hen positions, a farmer and five lifts.
+	this.ParseLevelScript = function(text)
+	{
+		var source = stripLevelScriptComments(text);
+		var levels = new Array;
+		for(var n = 1; n <= 8; ++n)
+		{
+			var layout = readLevelArray(source, "level" + n);
+			var hens = readLevelArray(source, "level" + n + "Hens");
+			var farmer = readLevelArray(source, "level" + n + "Farmer");
+			var lifts = readLevelArray(source, "level" + n + "Lift");
+			if(!layout || !hens || !farmer || !lifts)
+				return { error: "Level " + n + " is missing its layout, hens, farmer or lifts." };
+
+			if(layout.length != this.numYCells)
+				return { error: "Level " + n + " must have " + this.numYCells + " rows." };
+			for(var y = 0; y < layout.length; ++y)
+			{
+				var row = layout[y];
+				if(!row || row.length != this.numXCells)
+					return { error: "Level " + n + " row " + (y + 1) + " must have " + this.numXCells + " cells." };
+				for(var x = 0; x < row.length; ++x)
+				{
+					if(!isLevelInt(row[x]) || row[x] < this.blank || row[x] > this.ladder)
+						return { error: "Level " + n + " has a cell that is not 0-4." };
+				}
+			}
+
+			if(hens.length != this.maxHens)
+				return { error: "Level " + n + " must list " + this.maxHens + " hen positions." };
+			for(var i = 0; i < hens.length; ++i)
+			{
+				if(!hens[i] || hens[i].length != 2 || !isLevelCell(hens[i][0], this.numXCells) || !isLevelCell(hens[i][1], this.numYCells))
+					return { error: "Level " + n + " hen " + (i + 1) + " is not a position on the board." };
+			}
+
+			if(farmer.length != 2 || !isLevelCell(farmer[0], this.numXCells) || !isLevelInt(farmer[1]) || farmer[1] < -1 || farmer[1] > this.numYCells + 1)
+				return { error: "Level " + n + " farmer is not a position on the board." };
+			if((farmer[0] == -1) != (farmer[1] == -1))
+				return { error: "Level " + n + " farmer is not a position on the board." };
+
+			if(lifts.length != this.maxLifts)
+				return { error: "Level " + n + " must list " + this.maxLifts + " lifts." };
+			for(var i = 0; i < lifts.length; ++i)
+			{
+				if(!isLevelCell(lifts[i], this.numXCells))
+					return { error: "Level " + n + " lift " + (i + 1) + " is not a column on the board." };
+			}
+
+			levels[n - 1] = { layout: layout, hens: hens, farmer: farmer, lifts: lifts };
+		}
+		return { levels: levels };
+	}
+
+	this.LoadFile = function(input)
+	{
+		var file = input.files && input.files[0];
+		// Clearing the input lets the same file be chosen again.
+		input.value = "";
+		if(!file)
+			return;
+
+		var editor = this;
+		var reader = new FileReader();
+		reader.onload = function()
+		{
+			editor.ApplyLevelScript(String(reader.result), file.name);
+		};
+		reader.onerror = function()
+		{
+			alert("Could not read " + file.name + ".");
+		};
+		reader.readAsText(file);
+	}
+
+	this.ApplyLevelScript = function(text, name)
+	{
+		var parsed = this.ParseLevelScript(text);
+		if(parsed.error)
+		{
+			alert(name + ": " + parsed.error);
+			return;
+		}
+
+		if(!window.confirm("Replace all eight levels with the layouts in " + name + "?"))
+			return;
+
+		for(var lev = 0; lev < 8; ++lev)
+		{
+			var src = parsed.levels[lev];
+			var layout = new Array;
+			for(var y = 0; y < this.numYCells; ++y)
+			{
+				layout[y] = new Array;
+				for(var x = 0; x < this.numXCells; ++x)
+					layout[y][x] = src.layout[y][x];
+			}
+			this.editableLayouts[lev] = layout;
+
+			var hens = new Array;
+			for(var i = 0; i < this.maxHens; ++i)
+			{
+				hens[i] = new Array;
+				hens[i][0] = src.hens[i][0];
+				hens[i][1] = src.hens[i][1];
+			}
+			this.editableHens[lev] = hens;
+
+			this.editableFarmers[lev] = new Array;
+			this.editableFarmers[lev][0] = src.farmer[0];
+			this.editableFarmers[lev][1] = src.farmer[1];
+
+			var lifts = new Array;
+			for(var i = 0; i < this.maxLifts; ++i)
+				lifts[i] = src.lifts[i];
+			this.editableLifts[lev] = lifts;
+		}
+
+		this.SetCurrentLayout(this.currentLayout, true);
+		document.getElementById("leveldesc").value = this.BuildLevelScript();
 	}
 
 	// Perform basic checks necessary for a level to work properly in Chuckie Egg.
@@ -983,7 +1139,105 @@ function LevelEditor()
 		this.Save();
 		window.location = url;
 	}
+
+	// Enemy set is chosen by the game from the level number. The eight
+	// editor layouts repeat, so a later number plays this layout with the
+	// rules for that part of the game:
+	//   0  levels 1-8:   hens 1-4
+	//   8  levels 9-16:  mother duck
+	//  16  levels 17-24: hens 1-4 and mother duck
+	//  24  level 25 on:  hens 1-8 and mother duck
+	//  32  level 33 on:  hens 1-8 and mother duck, faster hens
+	this.PlayCurrent = function(url)
+	{
+		if(!this.ValidateLayout(this.currentLayout))
+			return;
+
+		var mode = document.getElementById("playmode");
+		var offset = 0;
+		if(mode)
+			offset = parseInt(mode.value, 10);
+		if(isNaN(offset) || offset < 0)
+			offset = 0;
+
+		this.Save();
+		window.location = url + "?level=" + (this.currentLayout + offset);
+	}
 };
+
+function stripLevelScriptComments(text)
+{
+	var out = "";
+	var i = 0;
+	while(i < text.length)
+	{
+		if(text.substr(i, 2) == "/*")
+		{
+			var end = text.indexOf("*/", i + 2);
+			if(end < 0)
+				break;
+			out += " ";
+			i = end + 2;
+		}
+		else if(text.substr(i, 2) == "//")
+		{
+			var nl = text.indexOf("\n", i);
+			if(nl < 0)
+				break;
+			i = nl;
+		}
+		else
+		{
+			out += text.charAt(i);
+			++i;
+		}
+	}
+	return out;
+}
+
+function readLevelArray(text, name)
+{
+	var re = new RegExp("(?:^|[^A-Za-z0-9_])(?:var\\s+)?" + name + "\\s*=\\s*\\[");
+	var found = re.exec(text);
+	if(!found)
+		return null;
+
+	var start = found.index + found[0].length - 1;
+	var depth = 0;
+	for(var i = start; i < text.length; ++i)
+	{
+		var c = text.charAt(i);
+		if(c == "[")
+			++depth;
+		else if(c == "]")
+		{
+			--depth;
+			if(depth == 0)
+			{
+				try
+				{
+					return JSON.parse(text.substring(start, i + 1));
+				}
+				catch(e)
+				{
+					return null;
+				}
+			}
+		}
+	}
+	return null;
+}
+
+function isLevelInt(n)
+{
+	return typeof n == "number" && isFinite(n) && Math.floor(n) == n;
+}
+
+// -1 means the piece is absent. Otherwise it must sit on a cell.
+function isLevelCell(n, count)
+{
+	return isLevelInt(n) && (n == -1 || (n >= 0 && n < count));
+}
 
 function save()
 {

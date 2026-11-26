@@ -496,7 +496,12 @@ function GUIStateNumPlayers(guiObj)
 	this.Exit = function() 
 	{ 
 		game.Init(this.numPlayers);
-		game.SelectLevel(0);
+		// The level editor opens this page with ?level= to start on one
+		// layout and enemy set. The main game leaves g_startLevel unset.
+		var startLevel = 0;
+		if(typeof g_startLevel == "number" && g_startLevel > 0)
+			startLevel = g_startLevel;
+		game.SelectLevel(startLevel);
 		game.DecrementLives();
 		this.guiObj.ClearScreen();
 		return 0; 

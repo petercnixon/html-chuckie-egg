@@ -10,6 +10,26 @@
 			// The level editor's Play button lands here. Always take the layouts
 			// it stored in the "levels" and "chars" cookies.
 			g_loadLevels = true;
+
+			// Play level adds ?level= so the game starts on that layout and
+			// enemy set. The number is the same zero-based level the game uses.
+			g_startLevel = 0;
+			(function()
+			{
+				var search = window.location.search;
+				if(!search || search.length < 2)
+					return;
+				var query = search.substring(1).split("&");
+				for(var i = 0; i < query.length; ++i)
+				{
+					var pair = query[i].split("=");
+					if(pair[0] != "level")
+						continue;
+					var n = parseInt(pair[1], 10);
+					if(!isNaN(n) && n > 0)
+						g_startLevel = n;
+				}
+			})();
 		</script>
 		<Script type="text/JavaScript" language="JavaScript" src="storage.js"></script>
 		<Script type="text/JavaScript" language="JavaScript" src="rle.js"></script>
