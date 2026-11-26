@@ -239,6 +239,39 @@ function Game(levmgr)
 		this.IncrementScore(100);
 		this.players[this.currentPlayer].DecrementEggs();
 	}
+
+	// True when the layout still has an egg the farmer can pick up.
+	this.LayoutHasEggs = function(layout)
+	{
+		var egg = this.cachedLevMgr.egg;
+		for(var y = 0; y < layout.length; ++y)
+		{
+			var row = layout[y];
+			for(var x = 0; x < row.length; ++x)
+			{
+				if(row[x] == egg)
+					return true;
+			}
+		}
+		return false;
+	}
+
+	// Death is ignored once every egg on the level has been collected.
+	this.AcceptDeath = function()
+	{
+		var cachePlayer = this.players[this.currentPlayer];
+		if(cachePlayer.GetNumEggs() == 0)
+		{
+			farmer.dead = false;
+			audio.stop(audio.tuneSample);
+			return false;
+		}
+
+		this.deadTuneCounter = 78;
+		audio.play(audio.tuneSample);
+		farmer.dead = false;
+		return true;
+	}
 	
 	this.OnGrainCollected = function()
 	{
@@ -346,6 +379,17 @@ function Game(levmgr)
 	{
 		var nextPlayer = this.FindNextPlayer();
 		this.SwitchPlayer(nextPlayer);
+
+		// The reloaded layout is the one the player left behind. If the last
+		// egg was taken on the frame they died, nothing remains to finish
+		// the level. Treat that as level complete and do not take a life.
+		var cachePlayer = this.players[this.currentPlayer];
+		if(!this.LayoutHasEggs(cachePlayer.GetLevelState()))
+		{
+			cachePlayer.ClearEggs();
+			return;
+		}
+
 		this.DecrementLives();
 	}
 	
@@ -388,11 +432,7 @@ function Game(levmgr)
 		var cachePlayer = this.players[this.currentPlayer];
 		
 		if(farmer.dead)
-		{
-			this.deadTuneCounter = 78;
-			audio.play(audio.tuneSample);
-			farmer.dead = false;
-		}
+			this.AcceptDeath();
 
 		// Process death until tune has finished playing.
 		if(this.deadTuneCounter > 0)
@@ -460,10 +500,7 @@ function Game(levmgr)
 	            --this.currentTime;
 	            this.SetTimeDisplay(this.currentTime);
 	            if(this.currentTime == 0)
-	            {
-					this.deadTuneCounter = 78;
-					audio.play(audio.tuneSample);
-				}
+					this.AcceptDeath();
 	        }
     	    
 	        if((this.currentFrame % 32) == 0)

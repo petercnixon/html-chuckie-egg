@@ -57,6 +57,7 @@ function Player()
     this.IncrementLives = function() { ++ this.numLives; }
     this.DecrementEggs = function() { --this.numEggs; }
     this.GetNumEggs = function() { return this.numEggs; }
+    this.ClearEggs = function() { this.numEggs = 0; }
     this.SetBonus = function(amount) { this.bonus = amount; }
     this.GetBonus = function() { return this.bonus; }
 };

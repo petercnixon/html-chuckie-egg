@@ -944,9 +944,18 @@ function Farmer(levmgr)
 		this.UpdatePhysics();
 		this.CollisionDetection();
 
-		// Quit if farmer died as a result of a collision.
+		// A fatal fall is flagged before egg collection in the same pass.
+		// If that egg was the last one, ignore the death so the level can end.
+		// Either way, do not keep simulating a frame that already left the screen.
 		if(this.dead)
+		{
+			if(game.players[game.currentPlayer].GetNumEggs() == 0)
+			{
+				this.dead = false;
+				this.cacheAudio.stop(this.cacheAudio.tuneSample);
+			}
 			return;
+		}
 
 		this.ProcessStateMachine();
 		this.UpdateAnims();

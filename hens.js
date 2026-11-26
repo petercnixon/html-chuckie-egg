@@ -207,6 +207,15 @@ function Hens(levmgr)
 		return state;
     	}	
     
+	// Neighbour probes look one cell outside the hen. That cell is off the
+	// 20x28 playfield at the screen edge, and an unguarded read throws.
+	this.CellAt = function(layout, y, x)
+	{
+		if(y < 0 || x < 0 || y >= this.cachedLevMgr.numYCells || x >= this.cachedLevMgr.numXCells)
+			return this.cachedLevMgr.blank;
+		return layout[y][x];
+	}
+
     	this.UpdateHenState = function(state, xPos, yPos)
     	{
 		var cacheLevel = level;
@@ -220,13 +229,13 @@ function Hens(levmgr)
 		//
 		var xCell = (xPos>>3); 
 		var yCell = ((yPos+4)>>3);
-		var southWest = cacheLayout[yCell+1][xCell-1];
-		var southEast = cacheLayout[yCell+1][xCell+1];
-		var east = cacheLayout[yCell][xCell+1];
-		var west = cacheLayout[yCell][xCell-1];
-		var south = cacheLayout[yCell+1][xCell];
-		var north = cacheLayout[yCell-1][xCell];
-		var north2 = cacheLayout[yCell-2][xCell];
+		var southWest = this.CellAt(cacheLayout, yCell+1, xCell-1);
+		var southEast = this.CellAt(cacheLayout, yCell+1, xCell+1);
+		var east = this.CellAt(cacheLayout, yCell, xCell+1);
+		var west = this.CellAt(cacheLayout, yCell, xCell-1);
+		var south = this.CellAt(cacheLayout, yCell+1, xCell);
+		var north = this.CellAt(cacheLayout, yCell-1, xCell);
+		var north2 = this.CellAt(cacheLayout, yCell-2, xCell);
 		
 
 		if(state == this.walkRight || state == this.walkLeft)
